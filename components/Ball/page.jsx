@@ -9,11 +9,17 @@ export default function Ball(){
 
     useEffect(() => {
         window.addEventListener("mousemove", handleMouseMove);
-        window.addEventListener("mouseup", handleMouseUp)
+        window.addEventListener("mouseup", handleMouseUp);
+
+        window.addEventListener("touchmove", handleMouseMove);
+        window.addEventListener("touchend", handleMouseUp);
 
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseup', handleMouseUp);
+
+            window.removeEventListener("touchmove", handleMouseMove);
+            window.removeEventListener("touchend", handleMouseUp);
         }
     }, [isDragging])
 
@@ -45,6 +51,9 @@ export default function Ball(){
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onMouseMove={handleMouseMove}
+        onTouchStart={handleMouseDown}
+        onTouchEnd={handleMouseUp}
+        onTouchMove={handleMouseMove}
         style={{
             position:"absolute",
             transform: `translate(${position.x}px, ${position.y}px)`,
