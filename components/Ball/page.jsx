@@ -11,14 +11,14 @@ export default function Ball(){
         window.addEventListener("mousemove", handleMouseMove);
         window.addEventListener("mouseup", handleMouseUp);
 
-        window.addEventListener("touchmove", handleMouseMove);
+        window.addEventListener("touchmove", handleTouchMove);
         window.addEventListener("touchend", handleMouseUp);
 
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseup', handleMouseUp);
 
-            window.removeEventListener("touchmove", handleMouseMove);
+            window.removeEventListener("touchmove", handleTouchMove);
             window.removeEventListener("touchend", handleMouseUp);
         }
     }, [isDragging])
@@ -26,9 +26,17 @@ export default function Ball(){
     function handleMouseDown(e){
         setIsDragging(true);
 
-        offset.current = {
-            x:e.clientX - position.x,
-            y:e.clientY - position.y       
+        if (e.type === "mousedown") {
+            offset.current = {
+                x: e.clientX - position.x,
+                y: e.clientY - position.y       
+            };
+        } else if (e.type === "touchstart") {
+            const touch = e.touches[0];
+            offset.current = {
+                x: touch.clientX - position.x,
+                y: touch.clientY - position.y
+            };
         }
     }
 
@@ -37,11 +45,21 @@ export default function Ball(){
     }
 
     function handleMouseMove(e){
-        if (isDragging){
+        if (isDragging && e.type === "mousemove"){
             setPosition({
                 x: e.clientX - offset.current.x,
                 y: e.clientY - offset.current.y
             })
+        }
+    }
+
+    function handleTouchMove(e) {
+        if (isDragging && e.type === "touchmove") {
+            const touch = e.touches[0];
+            setPosition({
+                x: touch.clientX - offset.current.x,
+                y: touch.clientY - offset.current.y
+            });
         }
     }
 
@@ -53,7 +71,7 @@ export default function Ball(){
         onMouseMove={handleMouseMove}
         onTouchStart={handleMouseDown}
         onTouchEnd={handleMouseUp}
-        onTouchMove={handleMouseMove}
+        onTouchMove={handleTouchMove}
         style={{
             position:"absolute",
             transform: `translate(${position.x}px, ${position.y}px)`,
